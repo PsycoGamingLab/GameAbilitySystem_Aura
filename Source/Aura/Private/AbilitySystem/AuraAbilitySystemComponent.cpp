@@ -3,3 +3,17 @@
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 
+void UAuraAbilitySystemComponent::AbilityActorInfoSet()
+{
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this,&UAuraAbilitySystemComponent::EffectedApplied);
+}
+
+void UAuraAbilitySystemComponent::EffectedApplied(UAbilitySystemComponent* AbilitySystemComponent,
+                                                  const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
+{
+	FGameplayTagContainer TagContainer;
+	EffectSpec.GetAllAssetTags(TagContainer);
+
+	EffectAssetTags.Broadcast(TagContainer);
+	
+}
