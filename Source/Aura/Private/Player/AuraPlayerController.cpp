@@ -3,8 +3,10 @@
 
 #include "Player/AuraPlayerController.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
@@ -77,6 +79,32 @@ void AAuraPlayerController::CursorTrace()
 	
 }
 
+void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	
+}
+ 
+void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if(GetAsc() == nullptr)return;
+	GetAsc()->AbilityInputTagReleased(InputTag);
+}
+ 
+void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if(GetAsc() == nullptr)return;
+	GetAsc()->AbilityInputTagHeld(InputTag);
+}
+
+UAuraAbilitySystemComponent* AAuraPlayerController::GetAsc()
+{
+	if(AuraAbilitySystemComponent == nullptr)
+	{
+		AuraAbilitySystemComponent= Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	}
+	return AuraAbilitySystemComponent;
+}
+
 void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -101,9 +129,10 @@ void AAuraPlayerController::BeginPlay()
 void AAuraPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 
-	EnhancedInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&AAuraPlayerController::Move);
+	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+	AuraInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered,this,&ThisClass::Move);
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
