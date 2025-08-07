@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "NiagaraSystem.h"
 #include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
@@ -34,6 +35,7 @@ public:
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
 	/**
 	 * End Combat Interface
 	 */
@@ -99,6 +101,9 @@ protected:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	UNiagaraSystem* BloodEffect;
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
